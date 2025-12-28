@@ -25,10 +25,17 @@ POST /api/courses
 GET /api/courses/{id}
 GET /api/courses/{id}/structure
 
-## UI (опционально)
+## User Interface (опционально)
 
-/ui/courses
-/ui/courses/{id}
-/ui/assignments
-/ui/assignments/{id}/submit
-/ui/students/{id}
+В проект добавлен простой серверный пользовательский интерфейс на Thymeleaf + Bootstrap.
+UI предназначен **исключительно для демонстрации и ручного тестирования backend-логики**
+(ORM, связи сущностей, транзакции, lazy-loading).
+
+UI не заменяет и не дублирует REST API, а использует те же сервисы и DTO.
+
+Доступные страницы:
+- `/ui/courses` — список курсов
+- `/ui/courses/{id}` — структура курса и запись студента
+- `/ui/assignments` — список заданий
+- `/ui/assignments/{id}/submit` — отправка решения
+- `/ui/students/{id}` — курсы, задания и результаты тестов студента
