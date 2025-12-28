@@ -1,0 +1,28 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:55432/learning_platform
+    username: app
+    password: app
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+
+server:
+  port: 8081
+  error:
+    include-message: always
+    include-exception: true
+    include-stacktrace: always
+
+logging:
+  level:
+    org.springframework.web: DEBUG
+    org.springframework.boot.autoconfigure.web.servlet.error: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.orm.jdbc.bind: TRACE

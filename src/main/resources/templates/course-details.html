@@ -1,0 +1,122 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Детали курса</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+</head>
+<body class="bg-light">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+        <a class="navbar-brand" href="/ui/courses">Учебная платформа</a>
+        <div class="navbar-nav">
+            <a class="nav-link" href="/ui/courses">Курсы</a>
+            <a class="nav-link" href="/ui/assignments">Задания</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <a class="btn btn-link p-0 mb-3" href="/ui/courses">&larr; Назад к курсам</a>
+
+    <div th:if="${message}" class="alert alert-success" th:text="${message}"></div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <h1 class="h4" th:text="${course.title}">Название курса</h1>
+            <p class="text-muted mb-2" th:text="${course.description}">Описание курса</p>
+            <div class="d-flex flex-wrap gap-3">
+                <div><strong>Дата начала:</strong> <span th:text="${course.startDate}">2025-01-01</span></div>
+                <div><strong>Длительность:</strong> <span th:text="${course.duration}">10</span></div>
+                <div><strong>ID преподавателя:</strong> <span th:text="${course.teacherId}">1</span></div>
+                <div><strong>ID категории:</strong> <span th:text="${course.categoryId}">1</span></div>
+            </div>
+            <div class="mt-3">
+                <strong>Теги:</strong>
+                <span th:if="${#lists.isEmpty(course.tags)}" class="text-muted">-</span>
+                <span th:each="tag,iter : ${course.tags}">
+                    <span class="badge text-bg-light border" th:text="${tag}">тег</span>
+                    <span th:if="${!iter.last}"> </span>
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <h2 class="h5">Модули и уроки</h2>
+            <div th:if="${#lists.isEmpty(course.modules)}" class="alert alert-warning">
+                Модули пока не добавлены.
+            </div>
+            <div th:each="module : ${course.modules}" class="card mb-3">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong th:text="${module.orderIndex}">1</strong>.
+                        <span th:text="${module.title}">Название модуля</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted" th:text="${module.description}">Описание модуля</p>
+
+                    <div th:if="${#lists.isEmpty(module.lessons)}" class="text-muted">
+                        Уроков пока нет.
+                    </div>
+                    <div th:each="lesson : ${module.lessons}" class="mb-4">
+                        <h6 th:text="${lesson.title}">Название урока</h6>
+                        <p class="text-muted" th:text="${lesson.content}">Содержание урока</p>
+
+                        <div>
+                            <strong>Задания</strong>
+                            <div th:if="${#lists.isEmpty(lesson.assignments)}" class="text-muted">
+                                Заданий пока нет.
+                            </div>
+                            <ul th:if="${!#lists.isEmpty(lesson.assignments)}" class="list-group list-group-flush">
+                                <li th:each="assignment : ${lesson.assignments}" class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <div th:text="${assignment.title}">Название задания</div>
+                                        <small class="text-muted">Срок сдачи: <span th:text="${assignment.dueDate}">2025-01-01</span></small>
+                                    </div>
+                                    <a class="btn btn-sm btn-outline-secondary" th:href="@{'/ui/assignments/' + ${assignment.id} + '/submit'}">Сдать</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <h2 class="h5">Записать студента</h2>
+            <form class="card card-body" th:action="@{'/ui/courses/' + ${course.id} + '/enroll'}" method="post">
+                <div class="mb-3">
+                    <label class="form-label" for="studentId">Студент</label>
+                    <select class="form-select" id="studentId" name="studentId" required>
+                        <option value="" disabled selected>Выберите студента</option>
+                        <option th:each="student : ${students}" th:value="${student.id}" th:text="${student.name + ' (' + student.email + ')'}">
+                            Студент
+                        </option>
+                    </select>
+                </div>
+                <button class="btn btn-success" type="submit">Записать</button>
+            </form>
+
+            <div class="mt-4">
+                <h3 class="h6">Текущие записи</h3>
+                <div th:if="${#lists.isEmpty(enrollments)}" class="text-muted">Студенты пока не записаны.</div>
+                <ul th:if="${!#lists.isEmpty(enrollments)}" class="list-group list-group-flush">
+                    <li th:each="enrollment : ${enrollments}" class="list-group-item">
+                        <div class="fw-semibold" th:text="${studentsById[enrollment.studentId] != null ? studentsById[enrollment.studentId].name : 'Студент №' + enrollment.studentId}">
+                            Студент
+                        </div>
+                        <small class="text-muted">Статус: <span th:text="${enrollment.status}">АКТИВЕН</span></small>
+                        <div>
+                            <a class="btn btn-sm btn-link p-0" th:href="@{'/ui/students/' + ${enrollment.studentId}}">Открыть студента</a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
